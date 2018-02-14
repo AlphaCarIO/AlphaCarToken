@@ -3,16 +3,14 @@ module.exports = {
   // to customize your Truffle configuration!
   // contracts_build_directory: "./build",
   networks: {
-    /*
     ropsten: {
       network_id: 3,    // Official ropsten network id
-      host: '128.199.120.45',
+      host: '127.0.0.1',
       port: 8545,
-      gas: 4712388,
-      gasPirce: 200000000000,
-      from: '0xe0a46b5ea4c6e6e1349c0c0e62050410054f9f27'
+      gas: 3000000,
+      gasPirce: 1e+9,
+      from: '0x2ac91344e9f023954dfe88efd5f7770db85eaba3'
     },
-    */
     development: {
       host: "127.0.0.1",
       port: 7545,

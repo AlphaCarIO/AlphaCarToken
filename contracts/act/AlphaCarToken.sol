@@ -1,10 +1,8 @@
 pragma solidity ^0.4.18;
 
-import 'zeppelin-solidity/contracts/token/PausableToken.sol';
+import 'zeppelin-solidity/contracts/token/ERC20/PausableToken.sol';
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
-import 'zeppelin-solidity/contracts/token/SafeERC20.sol';
-import './TokenConfig.sol';
-
+import 'zeppelin-solidity/contracts/token/ERC20/SafeERC20.sol';
 
 // ----------------------------------------------------------------------------
 // Alpha Car Token smart contract - ERC20 Token Interface
@@ -12,7 +10,7 @@ import './TokenConfig.sol';
 // The MIT Licence.
 // ----------------------------------------------------------------------------
 
-contract AlphaCarToken is PausableToken, TokenConfig {
+contract AlphaCarToken is PausableToken {
 
   using SafeERC20 for ERC20;
   using SafeMath for uint;
@@ -24,7 +22,28 @@ contract AlphaCarToken is PausableToken, TokenConfig {
   Some wallets/interfaces might not even bother to look at this information.
   */
 
-  string public name = NAME;
+  // token number for 1 ether
+  uint public constant TOKEN_PER_ETHER = 60000;
+    
+    // ------------------------------------------------------------------------
+    // Individual transaction contribution min and max amounts
+    // Set to 0 to switch off, or `x ether`
+    // ------------------------------------------------------------------------
+  uint private CONTRIBUTIONS_MIN = 1 ether;
+
+  uint constant public OFFSET = 420;
+
+  uint constant public MIN_CROWSALE_TIME = 3600;
+
+  uint8 public constant DECIMALS = 8;
+    
+  uint public constant DECIMALSFACTOR = 10 ** uint(DECIMALS);
+
+  uint public constant TOKENS_TOTAL = 100 * 10 ** 8 * DECIMALSFACTOR;
+
+  uint public constant TOKENS_CAP_ICO = 25 * 10 ** 8 * DECIMALSFACTOR;
+
+  string public name = "Alpha Car Token";
   
   uint8 public decimals = DECIMALS;
 
@@ -32,8 +51,7 @@ contract AlphaCarToken is PausableToken, TokenConfig {
   
   string public symbol;
 
-  string public version = VERSION;
-    
+  string public version = "v1.0";
 
     // ------------------------------------------------------------------------
     // Tranche 1 token sale start date and end date
@@ -79,16 +97,27 @@ contract AlphaCarToken is PausableToken, TokenConfig {
     _;
   }
 
-  modifier notWallet(address addr) {
-    require(addr != wallet);
-    _;
+  mapping(address => bool) userAddr;
+
+  function whitelist(address user) onlyOwner public {
+    userAddr[user] = true;
+  }
+
+  function unWhitelist(address user) onlyOwner public {
+    userAddr[user] = false;
+  }
+
+  function isInWhitelist(address user) public view
+    returns (bool)
+  {
+    return userAddr[user];
   }
 
   function AlphaCarToken(string _symbol, address _wallet) validAddress(_wallet) public {
     symbol = _symbol;
-    totalSupply = TOKENS_TOTAL;
+    totalSupply_ = TOKENS_TOTAL;
     wallet = _wallet;
-    balances[wallet] = totalSupply;
+    balances[wallet] = totalSupply_;
   }
 
   // ------------------------------------------------------------------------
@@ -108,15 +137,18 @@ contract AlphaCarToken is PausableToken, TokenConfig {
   // account. Can be used by exchanges to purchase tokens on behalf of
   // it's user
   // ------------------------------------------------------------------------
-  function proxyPayment(address participant) public payable 
-    validAddress(participant)
-    notWallet(participant)
-  {
-
-    require(msg.value >= CONTRIBUTIONS_MIN);
+  function proxyPayment(address participant) public payable {
+    
+    require(participant != address(0x0));
+    
+    require(participant != wallet);
 
     uint nowTime = getNow();
     require(nowTime >= startDate && nowTime <= endDate);
+
+    require(isInWhitelist(participant));
+
+    require(msg.value >= CONTRIBUTIONS_MIN);
 
     uint tokens = TOKEN_PER_ETHER.mul(msg.value).div(divider);
     crowsaleShare = crowsaleShare.add(tokens);
@@ -134,11 +166,12 @@ contract AlphaCarToken is PausableToken, TokenConfig {
   event TokenPurchase(address indexed wallet, address indexed purchaser, address indexed beneficiary, 
     uint256 value, uint256 amount);
 
-  function changeWallet(address _wallet)
-    onlyOwner
-    validAddress(_wallet)
-    notWallet(_wallet)
-  {
+  function changeWallet(address _wallet) onlyOwner public {
+    
+    require(_wallet != address(0x0));
+    
+    require(_wallet != wallet);
+
       balances[_wallet] = balances[wallet];
       balances[wallet] = 0;
       wallet = _wallet;
@@ -147,7 +180,7 @@ contract AlphaCarToken is PausableToken, TokenConfig {
 
   event WalletUpdated(address newWallet);
 
-  /* Approves and then calls the receiving contract */
+  /* Approves and then calls the receiving contract 
   function approveAndCall(address _spender, uint256 _value, bytes _extraData) public
     whenNotPaused
     validAddress(_spender)
@@ -165,5 +198,6 @@ contract AlphaCarToken is PausableToken, TokenConfig {
 
     return true;
   }
+  */
 
 }

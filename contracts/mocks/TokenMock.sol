@@ -18,6 +18,7 @@ contract TokenMock is AlphaCarToken {
     return getNow();
   }
   
+  /*
   function isContractFromOwner(address addr) public view onlyOwner
     returns (bool)
   {
@@ -33,5 +34,6 @@ contract TokenMock is AlphaCarToken {
     assembly { size := extcodesize(addr) }
     return size > 0;
   }
+  */
 
 }

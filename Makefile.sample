@@ -8,7 +8,7 @@
 DATADIR=./test_ethereum
 
 GETH_TEST_OPT=--datadir=$(DATADIR) --identity=test_demo --networkid=8341 --nodiscover --maxpeers 0 --fast --wsapi admin,eth,miner \
-	--rpcapi db,eth,net,web3,admin --rpc --rpcaddr 0.0.0.0 --cache=512 --etherbase=0xda83aee0f49802a331d455f503341a5fdcbde923 \
+	--rpcapi db,eth,net,web3,admin --rpc --rpcaddr 0.0.0.0 --port 31313 --cache=512 --etherbase=0xda83aee0f49802a331d455f503341a5fdcbde923 \
 	--mine --minerthreads 4 --rpccorsdomain "*"
 
 UNLOCK_LIST=--password geth-testenv/password \
@@ -44,6 +44,7 @@ ACC_L=$(shell echo $(ACC) | tr A-Z a-z)
 
 prepare:
 	npm i -g truffle
+	npm i -g truffle-flattener
 	npm i
 
 gen_bytes:
@@ -54,6 +55,11 @@ gen_bytes:
 cc:
 	rm -rf build
 	truffle compile
+	truffle-flattener contracts/act/AlphaCarToken.sol > build/merged.sol
+	truffle-flattener contracts/mocks/TokenMock.sol > build/mock_merged.sol
+
+	solc --optimize --optimize-runs 200 --bin build/merged.sol > build/merged.bytecode
+	solc --optimize --optimize-runs 200 --bin build/mock_merged.sol > build/mock_merged.bytecode
 
 wallet:
 	ethereumwallet --rpc $(DATADIR)/geth.ipc --reset-tabs --node=geth --gethpath=$(GETH) --network=test \

@@ -7,8 +7,8 @@ import sys
 js_template='''
 abi = %s;
 rawByteCode = "%s";
-AlphaAutoToken = web3.eth.contract(abi);
-byteCodeWithParam = AlphaAutoToken.new.getData('ACAR', '0x%s', {data: rawByteCode});
+AlphaCarToken = web3.eth.contract(abi);
+byteCodeWithParam = AlphaCarToken.new.getData('ACAR', '0x%s', {data: rawByteCode});
 console.log(byteCodeWithParam)
 
 '''
@@ -32,7 +32,7 @@ acc = acc.lower()
 if (acc.startswith("0x")) :
     acc = acc[2:]
 
-with open("../build/contracts/AlphaAutoToken.json","r") as f:
+with open("../build/contracts/AlphaCarToken.json","r") as f:
     raw_data = json.load(f)
     abi = json.dumps(raw_data['abi'])
     bytecode = raw_data['bytecode']
