@@ -42,6 +42,8 @@ endif
 
 ACC_L=$(shell echo $(ACC) | tr A-Z a-z)
 
+SOLC_OPT=--pretty-json --abi --bin --optimize --optimize-runs 200
+
 prepare:
 	npm i -g truffle
 	npm i -g truffle-flattener
@@ -55,11 +57,13 @@ gen_bytes:
 cc:
 	rm -rf build
 	truffle compile
-	truffle-flattener contracts/act/AlphaCarToken.sol > build/merged.sol
-	truffle-flattener contracts/mocks/TokenMock.sol > build/mock_merged.sol
+	truffle-flattener contracts/act/AlphaCarToken.sol > build/AlphaCarToken.sol
+	truffle-flattener contracts/act/Crowsale.sol > build/Crowsale.sol
+	truffle-flattener contracts/mocks/CrowsaleMock.sol > build/CrowsaleMock.sol
 
-	solc --optimize --optimize-runs 200 --bin build/merged.sol > build/merged.bytecode
-	solc --optimize --optimize-runs 200 --bin build/mock_merged.sol > build/mock_merged.bytecode
+	solc -o build/AlphaCarToken $(SOLC_OPT) build/AlphaCarToken.sol
+	solc -o build/Crowsale $(SOLC_OPT) build/Crowsale.sol
+	solc -o build/CrowsaleMock $(SOLC_OPT) build/CrowsaleMock.sol
 
 wallet:
 	ethereumwallet --rpc $(DATADIR)/geth.ipc --reset-tabs --node=geth --gethpath=$(GETH) --network=test \
