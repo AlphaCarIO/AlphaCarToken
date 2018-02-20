@@ -20,7 +20,10 @@ contract('AlphaCarToken', function (accounts) {
     console.log(token.address)
 
     await token.setNow(cc.ICO_START_DATE);
-    await token.proxyPayment(accounts[1], {gas: cc.gas_amt, from: accounts[1], to: token.address, value: web3.toWei("1", "Ether")});
+
+    await token.whitelist(accounts[1]);
+
+    await token.proxyPayment(accounts[1], {gas: cc.gas_amt, from: accounts[1], value: web3.toWei("1", "Ether")});
     
     var balance = await token.balanceOf.call(accounts[1])
     assert.strictEqual(balance.toNumber(), cc.tokenpether * cc.ONE, "step 1")
@@ -31,7 +34,7 @@ contract('AlphaCarToken', function (accounts) {
   })
   
   it('transfer after ico', async () => {
-
+    
     token.transfer(accounts[2], cc.ONE, {from: accounts[1]})
 
     await utils.expectThrow(token.transfer(accounts[2], cc.tokenpether * cc.ONE, {from: accounts[1]}))
@@ -44,7 +47,7 @@ contract('AlphaCarToken', function (accounts) {
     balance = await token.balanceOf.call(accounts[1])
     assert.strictEqual(balance.toNumber(), 0, "step 4")
 
-    await token.proxyPayment(accounts[1], {gas: cc.gas_amt, from: accounts[1], to: token.address, value: web3.toWei("1", "Ether")});
+    await token.proxyPayment(accounts[1], {gas: cc.gas_amt, from: accounts[1], value: web3.toWei("1", "Ether")});
 
     var balance = await token.balanceOf.call(accounts[1])
     assert.strictEqual(balance.toNumber(), cc.tokenpether * cc.ONE, "step 5")

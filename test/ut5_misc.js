@@ -21,21 +21,23 @@ contract('AlphaCarToken', function (accounts) {
 
   })
   
-  it('add to whitelist', async () => {
+  it('change ownership', async () => {
 
-    await token.whitelist(accounts[2]);
-
-    var acc_arr = [];
-
-    var count = 100;
-
-    for (var i = 0; i < count; i++) {
-      acc_arr.push(accounts[2]);
-    }
+    await token.setStartDate(cc.ICO_START_DATE - 1);
     
-    for (var i = 0; i < count; i++) {
-      await token.whitelist(accounts[2]);
-    }
+    await token.transferOwnership(accounts[4]);
+    
+    await utils.expectThrow(token.setStartDate(cc.ICO_START_DATE));
+
+    await token.setStartDate(cc.ICO_START_DATE - 1, {from: accounts[4]});
+
+    startDate = await token.startDate.call();
+
+    assert.strictEqual(startDate.toNumber(), cc.ICO_START_DATE - 1, "step 1");
+
+    await utils.expectThrow(token.transferOwnership(accounts[3]));
+
+    token.transferOwnership(accounts[3], {from: accounts[4]});
     
   })
   

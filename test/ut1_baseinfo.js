@@ -40,22 +40,5 @@ contract('AlphaCarToken', function (accounts) {
     assert.strictEqual(totalSupply.toNumber(), cc.total.toNumber())
 
   })
-
-  it('isContract Test', async () => {
-    var isContract = await token.isContractFromOwner.call(token.address)
-    assert.strictEqual(isContract, true, 'step 1')
-
-    isContract = await token.isContractFromOwner.call(0x1a2b3c4d5e6f789)
-    assert.strictEqual(isContract, false, 'step 2')
-
-    isContract = await token.isContractFromOwner.call(accounts[1])
-    assert.strictEqual(isContract, false, 'step 3')
-
-    console.log("acc1:", accounts[0])
-
-    isContract = await token.isContractFromOwner.call(accounts[1].replace("a", "b").replace("d", "e"))
-    assert.strictEqual(isContract, false, 'step 4')
-
-  })
   
 })

@@ -9,6 +9,9 @@ import 'zeppelin-solidity/contracts/token/ERC20/SafeERC20.sol';
 //
 // The MIT Licence.
 // ----------------------------------------------------------------------------
+interface tokenRecipient {
+  function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public; 
+}
 
 contract AlphaCarToken is PausableToken {
 
@@ -33,9 +36,9 @@ contract AlphaCarToken is PausableToken {
 
   uint constant public OFFSET = 420;
 
-  uint constant public MIN_CROWSALE_TIME = 3600;
+  uint constant public MIN_CROWSALE_TIME = 600;
 
-  uint8 public constant DECIMALS = 8;
+  uint8 public constant DECIMALS = 18;
     
   uint public constant DECIMALSFACTOR = 10 ** uint(DECIMALS);
 
@@ -51,31 +54,37 @@ contract AlphaCarToken is PausableToken {
   
   string public symbol;
 
-  string public version = "v1.0";
+  mapping(address => uint256) public weiBalances;
 
     // ------------------------------------------------------------------------
     // Tranche 1 token sale start date and end date
     // Do not use the `now` function here
-    // ICO start - Feb 1st 2018 @ 8:00 a.m.
+    // ICO start - Mar 1st 2018 @ 8:00 a.m.
     // ICO end - 30 days later after ICO started.
     // ------------------------------------------------------------------------
   uint public period = 30 days;
-  uint public startDate = 1517443200;
+  uint public startDate = 1519862400;
   uint public endDate = startDate + period;
+
+  function balanceOfWei(address _owner) public view returns (uint256 balance) {
+    return weiBalances[_owner];
+  }
 
   function setStartDate(uint _startDate) public onlyOwner {
     uint nowTime = getNow();
     require(startDate > nowTime);
     require(_startDate > nowTime);
-    require(_startDate <= endDate.sub(MIN_CROWSALE_TIME));
     startDate = _startDate;
+    uint tempEndDate = startDate.add(MIN_CROWSALE_TIME);
+    if (endDate < tempEndDate) {
+      endDate = tempEndDate;
+    }
   }
 
   function setEndDate(uint _endDate) public onlyOwner {
     uint nowTime = getNow();
     require(endDate > nowTime);
     require(_endDate > nowTime);
-    require(_endDate >= startDate.add(MIN_CROWSALE_TIME));
     endDate = _endDate;
   }
 
@@ -123,7 +132,7 @@ contract AlphaCarToken is PausableToken {
   // ------------------------------------------------------------------------
   // Accept ethers to buy tokens during the crowdsale(ICO)
   // ------------------------------------------------------------------------
-  function () public payable {
+  function () external payable {
     proxyPayment(msg.sender);
   }
 
@@ -140,31 +149,31 @@ contract AlphaCarToken is PausableToken {
   function proxyPayment(address participant) public payable {
     
     require(participant != address(0x0));
-    
-    require(participant != wallet);
 
     uint nowTime = getNow();
     require(nowTime >= startDate && nowTime <= endDate);
 
+    require(isInWhitelist(msg.sender));
     require(isInWhitelist(participant));
 
-    require(msg.value >= CONTRIBUTIONS_MIN);
+    uint weiRaised = msg.value;
 
-    uint tokens = TOKEN_PER_ETHER.mul(msg.value).div(divider);
+    require(weiRaised >= CONTRIBUTIONS_MIN);
+
+    uint tokens = TOKEN_PER_ETHER.mul(weiRaised).div(divider);
     crowsaleShare = crowsaleShare.add(tokens);
 
     require(crowsaleShare <= TOKENS_CAP_ICO);
+    
+    weiBalances[participant] = weiBalances[participant].add(weiRaised);
 
     balances[participant] = balances[participant].add(tokens);
     balances[wallet] = balances[wallet].sub(tokens);
 
-    wallet.transfer(msg.value);
-    TokenPurchase(wallet, msg.sender, participant, msg.value, tokens);
+    wallet.transfer(weiRaised);
+    TokenPurchase(wallet, msg.sender, participant, weiRaised, tokens);
 
   }
-
-  event TokenPurchase(address indexed wallet, address indexed purchaser, address indexed beneficiary, 
-    uint256 value, uint256 amount);
 
   function changeWallet(address _wallet) onlyOwner public {
     
@@ -177,27 +186,21 @@ contract AlphaCarToken is PausableToken {
       wallet = _wallet;
       WalletUpdated(wallet);
   }
+  
+  function approveAndCall(address _spender, uint256 _value, bytes _extraData) public
+    returns (bool success) 
+  {
+      tokenRecipient spender = tokenRecipient(_spender);
+      if (approve(_spender, _value)) {
+          spender.receiveApproval(msg.sender, _value, this, _extraData);            
+          return true;
+      }
+      return false;
+  }
+
+  event TokenPurchase(address indexed wallet, address indexed purchaser, address indexed beneficiary, 
+    uint256 value, uint256 amount);
 
   event WalletUpdated(address newWallet);
-
-  /* Approves and then calls the receiving contract 
-  function approveAndCall(address _spender, uint256 _value, bytes _extraData) public
-    whenNotPaused
-    validAddress(_spender)
-    returns (bool success)
-  {
-    allowed[msg.sender][_spender] = _value;
-    Approval(msg.sender, _spender, _value);
-
-    //call the receiveApproval function on the contract you want to be notified. 
-    //This crafts the function signature manually so one doesn't have to include a contract in here just for this.
-    //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
-    //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-    require(_spender.call(bytes4(bytes32(keccak256("receiveApproval(address, uint256, address, bytes)"))), 
-      msg.sender, _value, this, _extraData));
-
-    return true;
-  }
-  */
 
 }

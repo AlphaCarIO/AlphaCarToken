@@ -1,8 +1,7 @@
 var AlphaCarToken = artifacts.require("./AlphaCarToken.sol");
 
 module.exports = function(deployer, network, accounts) {
-//module.exports = function(deployer) {
-  console.log("deployer:", deployer)
+  //console.log("deployer:", deployer)
   //deployer.network
   if (network == 'geth_dev') {
     console.log("migrate geth_dev...")
