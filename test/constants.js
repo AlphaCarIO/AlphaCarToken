@@ -6,7 +6,7 @@ const tokenpether = 60000;
 const tokenpether_p1 = 90000;
 const tokenpether_p2 = 78000;
 
-const DECIMALS = 8;
+const DECIMALS = 18;
 const ONE = 10 ** DECIMALS;
 const total = BigNumber(100 * 10 ** 8 * ONE);
 const amt = BigNumber(100000 * ONE);

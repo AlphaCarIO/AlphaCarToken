@@ -1,14 +1,13 @@
 pragma solidity ^0.4.18;
 
-import 'zeppelin-solidity/contracts/token/ERC20/StandardToken.sol';
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
 import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 
-// ----------------------------------------------------------------------------
-// Alpha Car Token smart contract - ERC20 Token Interface
-//
-// The MIT Licence.
-// ----------------------------------------------------------------------------
+interface Token {
+  function transfer(address to, uint256 value) public returns (bool);
+  function transferFrom(address _from, address _to, uint256 _value) public returns (bool);
+  function approve(address spender, uint256 value) public returns (bool);
+}
 
 contract Crowsale is Ownable {
 
@@ -42,7 +41,7 @@ contract Crowsale is Ownable {
   
   string public symbol;
 
-  StandardToken public token;
+  Token public token;
 
   mapping(address => uint256) public weiBalances;
 
@@ -50,7 +49,7 @@ contract Crowsale is Ownable {
   uint public startDate = 1517443200;
   uint public endDate = startDate + period;
 
-  event TokenPurchase(address indexed wallet, address indexed beneficiary, uint256 value, uint256 amount);
+  event TokenPurchase(address indexed wallet, address indexed buyer, address indexed beneficiary, uint256 value, uint256 amount);
 
   event WalletUpdated(address newWallet);
 
@@ -58,16 +57,32 @@ contract Crowsale is Ownable {
     return weiBalances[_owner];
   }
 
+  uint public fakeNow = 0;
+
+  function getNow() public view returns (uint) {
+    if (fakeNow == 0) {
+      return now;
+    }
+    return fakeNow;
+  }
+
+  // @return true if crowdsale event has ended
+  function hasEnded() public view returns (bool) {
+    return getNow() > endDate;
+  }
+
   function setStartDate(uint _startDate) public onlyOwner {
-    require(startDate > now);
-    require(_startDate > now);
+    uint nowTime = getNow();
+    require(startDate > nowTime);
+    require(_startDate > nowTime);
     require(_startDate <= endDate.sub(MIN_CROWSALE_TIME));
     startDate = _startDate;
   }
 
   function setEndDate(uint _endDate) public onlyOwner {
-    require(endDate > now);
-    require(_endDate > now);
+    uint nowTime = getNow();
+    require(endDate > nowTime);
+    require(_endDate > nowTime);
     require(_endDate >= startDate.add(MIN_CROWSALE_TIME));
     endDate = _endDate;
   }
@@ -99,12 +114,7 @@ contract Crowsale is Ownable {
 
   function Crowsale(address _wallet, address tokenAddr) validAddress(_wallet) public {
     wallet = _wallet;
-    token = StandardToken(tokenAddr);
-  }
-
-  // @return true if crowdsale event has ended
-  function hasEnded() public view returns (bool) {
-    return now > endDate;
+    token = Token(tokenAddr);
   }
 
   // ------------------------------------------------------------------------
@@ -125,8 +135,10 @@ contract Crowsale is Ownable {
     
     require(participant != wallet);
 
-    require(now >= startDate && now <= endDate);
+    uint nowTime = getNow();
+    require(nowTime >= startDate && nowTime <= endDate);
 
+    require(isInWhitelist(msg.sender));
     require(isInWhitelist(participant));
 
     uint weiRaised = msg.value;
@@ -138,12 +150,13 @@ contract Crowsale is Ownable {
 
     require(crowsaleShare <= TOKENS_CAP_ICO);
     
-    weiBalances[participant] = weiRaised;
-    token.transfer(participant, tokens);
+    weiBalances[participant] = weiBalances[participant].add(weiRaised);
+
+    token.transferFrom(owner, participant, tokens);
 
     wallet.transfer(msg.value);
 
-    TokenPurchase(wallet, participant, msg.value, tokens);
+    TokenPurchase(wallet, msg.sender, participant, msg.value, tokens);
 
   }
 
