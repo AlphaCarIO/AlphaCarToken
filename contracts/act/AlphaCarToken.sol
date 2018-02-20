@@ -66,10 +66,6 @@ contract AlphaCarToken is PausableToken {
   uint public startDate = 1519862400;
   uint public endDate = startDate + period;
 
-  function balanceOfWei(address _owner) public view returns (uint256 balance) {
-    return weiBalances[_owner];
-  }
-
   function setStartDate(uint _startDate) public onlyOwner {
     uint nowTime = getNow();
     require(startDate > nowTime);
@@ -106,20 +102,18 @@ contract AlphaCarToken is PausableToken {
     _;
   }
 
-  mapping(address => bool) userAddr;
+  mapping(address => bool) userWhitelist;
 
   function whitelist(address user) onlyOwner public {
-    userAddr[user] = true;
+    userWhitelist[user] = true;
   }
 
   function unWhitelist(address user) onlyOwner public {
-    userAddr[user] = false;
+    userWhitelist[user] = false;
   }
 
-  function isInWhitelist(address user) public view
-    returns (bool)
-  {
-    return userAddr[user];
+  function isInWhitelist(address user) internal view returns (bool) {
+    return userWhitelist[user];
   }
 
   function AlphaCarToken(string _symbol, address _wallet) validAddress(_wallet) public {
@@ -160,7 +154,7 @@ contract AlphaCarToken is PausableToken {
 
     require(weiRaised >= CONTRIBUTIONS_MIN);
 
-    uint tokens = TOKEN_PER_ETHER.mul(weiRaised).div(divider);
+    uint tokens = TOKEN_PER_ETHER.mul(weiRaised);
     crowsaleShare = crowsaleShare.add(tokens);
 
     require(crowsaleShare <= TOKENS_CAP_ICO);
