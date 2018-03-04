@@ -11,11 +11,7 @@ contract TokenMock is AlphaCarToken {
 
   //this function will never be used in production env.
   function setNow(uint _now) public onlyOwner {
-    fakeNow = _now;
-  }
-
-  function getNowFromOwner() public view returns (uint time) {
-    return getNow();
+    act_now = _now;
   }
 
 }

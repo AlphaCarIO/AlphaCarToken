@@ -21,8 +21,6 @@ contract('AlphaCarToken', function (accounts) {
 
     await token.setNow(cc.ICO_START_DATE);
 
-    await token.whitelist(accounts[1]);
-
     await token.proxyPayment(accounts[1], {gas: cc.gas_amt, from: accounts[1], value: web3.toWei("1", "Ether")});
     
     var balance = await token.balanceOf.call(accounts[1])

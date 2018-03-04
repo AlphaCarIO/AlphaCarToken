@@ -1,6 +1,7 @@
 pragma solidity ^0.4.18;
 
 import 'zeppelin-solidity/contracts/token/ERC20/PausableToken.sol';
+import 'zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol';
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
 import 'zeppelin-solidity/contracts/token/ERC20/SafeERC20.sol';
 
@@ -13,7 +14,7 @@ interface tokenRecipient {
   function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public; 
 }
 
-contract AlphaCarToken is PausableToken {
+contract AlphaCarToken is PausableToken, BurnableToken {
 
   using SafeERC20 for ERC20;
   using SafeMath for uint;
@@ -32,9 +33,7 @@ contract AlphaCarToken is PausableToken {
     // Individual transaction contribution min and max amounts
     // Set to 0 to switch off, or `x ether`
     // ------------------------------------------------------------------------
-  uint private CONTRIBUTIONS_MIN = 1 ether;
-
-  uint constant public OFFSET = 420;
+  uint private CONTRIBUTIONS_MIN = 0.1 ether;
 
   uint constant public MIN_CROWSALE_TIME = 600;
 
@@ -59,12 +58,11 @@ contract AlphaCarToken is PausableToken {
     // ------------------------------------------------------------------------
     // Tranche 1 token sale start date and end date
     // Do not use the `now` function here
-    // ICO start - Mar 1st 2018 @ 8:00 a.m.
-    // ICO end - 30 days later after ICO started.
+    // ICO start - Mar 25th 2018 @ 8:00:00
+    // ICO end - Mar 31th 2018 @ 23:59:59
     // ------------------------------------------------------------------------
-  uint public period = 30 days;
-  uint public startDate = 1519862400;
-  uint public endDate = startDate + period;
+  uint public startDate = 1521936000;
+  uint public endDate = 1522511999;
 
   function setStartDate(uint _startDate) public onlyOwner {
     uint nowTime = getNow();
@@ -86,34 +84,20 @@ contract AlphaCarToken is PausableToken {
 
   address public wallet;
 
-  uint public fakeNow = 0;
+  uint public act_now = 0;
 
   uint public crowsaleShare = 0;
 
-  function getNow() internal view returns (uint) {
-    if (fakeNow == 0) {
+  function getNow() public view returns (uint) {
+    if (act_now == 0) {
       return now;
     }
-    return fakeNow;
+    return act_now;
   }
 
   modifier validAddress(address addr) {
     require(addr != address(0x0));
     _;
-  }
-
-  mapping(address => bool) userWhitelist;
-
-  function whitelist(address user) onlyOwner public {
-    userWhitelist[user] = true;
-  }
-
-  function unWhitelist(address user) onlyOwner public {
-    userWhitelist[user] = false;
-  }
-
-  function isInWhitelist(address user) internal view returns (bool) {
-    return userWhitelist[user];
   }
 
   function AlphaCarToken(string _symbol, address _wallet) validAddress(_wallet) public {
@@ -127,7 +111,7 @@ contract AlphaCarToken is PausableToken {
   // Accept ethers to buy tokens during the crowdsale(ICO)
   // ------------------------------------------------------------------------
   function () external payable {
-    proxyPayment(msg.sender);
+    buyTokens(msg.sender);
   }
 
   // @return true if crowdsale event has ended
@@ -135,20 +119,21 @@ contract AlphaCarToken is PausableToken {
     return getNow() > endDate;
   }
 
+  function getRemainingCrowsaleShare() public view returns (uint) {
+    return TOKENS_CAP_ICO - crowsaleShare;
+  }
+
   // ------------------------------------------------------------------------
   // Accept ethers from one account for tokens to be created for another
   // account. Can be used by exchanges to purchase tokens on behalf of
   // it's user
   // ------------------------------------------------------------------------
-  function proxyPayment(address participant) public payable {
+  function buyTokens(address participant) public payable {
     
     require(participant != address(0x0));
 
     uint nowTime = getNow();
     require(nowTime >= startDate && nowTime <= endDate);
-
-    require(isInWhitelist(msg.sender));
-    require(isInWhitelist(participant));
 
     uint weiRaised = msg.value;
 
@@ -178,6 +163,7 @@ contract AlphaCarToken is PausableToken {
       balances[_wallet] = balances[wallet];
       balances[wallet] = 0;
       wallet = _wallet;
+
       WalletUpdated(wallet);
   }
   

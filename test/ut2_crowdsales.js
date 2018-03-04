@@ -45,11 +45,6 @@ contract('AlphaCarToken', function (accounts) {
     var _now = await token.getNowFromOwner.call()
     assert.strictEqual(_now.toNumber(), cc.ICO_START_DATE, "2 unexpected time for now!")
 
-    await utils.expectThrow(token.proxyPayment(accounts[1], {gas: cc.gas_amt, from: accounts[1],
-      value: web3.toWei("1", "Ether")}));
-
-    await token.whitelist(accounts[1]);
-
     token.proxyPayment(accounts[1], {gas: cc.gas_amt, from: accounts[1], value: web3.toWei("1", "Ether")});
 
     var balance = await token.balanceOf.call(accounts[1])
@@ -63,11 +58,6 @@ contract('AlphaCarToken', function (accounts) {
   it('do crowdsales in ICO. at the end of ICO', async () => {
 
     await token.setNow(cc.END_DATE)
-
-    await utils.expectThrow(token.proxyPayment(accounts[1], {gas: cc.gas_amt, from: accounts[1], 
-      value: web3.toWei("1", "Ether")}));
-
-    await token.whitelist(accounts[1]);
 
     token.proxyPayment(accounts[1], {gas: cc.gas_amt, from: accounts[1], value: web3.toWei("1", "Ether")});
 
