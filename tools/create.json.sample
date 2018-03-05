@@ -1,0 +1,10 @@
+{
+    "provider_url": "http://localhost:8545",
+    "abi_file": "path/to/your/abi/file",
+    "bytecode_file": "path/to/your/bytecode/file",
+    "symbol": "ACAR",
+    "owner_addr": "0x2ac91344e9f023954dfe88efd5f7770db85eaba3",
+    "wallet_addr": "0xbe3b10d99239e507c6d18184b49c9b11fa2c358a",
+    "gas": 4000000,
+    "gasPrice": 1e+9
+}

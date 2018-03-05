@@ -11,7 +11,7 @@ const amt1 = BigNumber(10000 * ONE);
 
 const day = 86400;
 
-const ICO_START_DATE = 1521936000;
+const START_DATE = 1521936000;
 const END_DATE = 1522511999;
 
 const gas_amt = 150000;
@@ -25,8 +25,7 @@ module.exports = {
     amt,
     amt1,
     day,
-    ICO_PERIOD,
-    ICO_START_DATE,
+    START_DATE,
     END_DATE,
     gas_amt
 }

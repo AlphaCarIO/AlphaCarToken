@@ -23,17 +23,17 @@ contract('AlphaCarToken', function (accounts) {
   
   it('change ownership', async () => {
 
-    await token.setStartDate(cc.ICO_START_DATE - 1);
+    await token.setStartDate(cc.START_DATE - 1);
     
     await token.transferOwnership(accounts[4]);
     
-    await utils.expectThrow(token.setStartDate(cc.ICO_START_DATE));
+    await utils.expectThrow(token.setStartDate(cc.START_DATE));
 
-    await token.setStartDate(cc.ICO_START_DATE - 1, {from: accounts[4]});
+    await token.setStartDate(cc.START_DATE - 1, {from: accounts[4]});
 
     startDate = await token.startDate.call();
 
-    assert.strictEqual(startDate.toNumber(), cc.ICO_START_DATE - 1, "step 1");
+    assert.strictEqual(startDate.toNumber(), cc.START_DATE - 1, "step 1");
 
     await utils.expectThrow(token.transferOwnership(accounts[3]));
 

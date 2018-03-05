@@ -19,9 +19,9 @@ contract('AlphaCarToken', function (accounts) {
     token = await TokenMock.new(cc.symbol, wallet, {from: accounts[0]})
     console.log(token.address)
 
-    await token.setNow(cc.ICO_START_DATE);
+    await token.setNow(cc.START_DATE);
 
-    await token.proxyPayment(accounts[1], {gas: cc.gas_amt, from: accounts[1], value: web3.toWei("1", "Ether")});
+    await token.buyTokens(accounts[1], {gas: cc.gas_amt, from: accounts[1], value: web3.toWei("1", "Ether")});
     
     var balance = await token.balanceOf.call(accounts[1])
     assert.strictEqual(balance.toNumber(), cc.tokenpether * cc.ONE, "step 1")
@@ -45,7 +45,7 @@ contract('AlphaCarToken', function (accounts) {
     balance = await token.balanceOf.call(accounts[1])
     assert.strictEqual(balance.toNumber(), 0, "step 4")
 
-    await token.proxyPayment(accounts[1], {gas: cc.gas_amt, from: accounts[1], value: web3.toWei("1", "Ether")});
+    await token.buyTokens(accounts[1], {gas: cc.gas_amt, from: accounts[1], value: web3.toWei("1", "Ether")});
 
     var balance = await token.balanceOf.call(accounts[1])
     assert.strictEqual(balance.toNumber(), cc.tokenpether * cc.ONE, "step 5")

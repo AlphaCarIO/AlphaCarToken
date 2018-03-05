@@ -33,7 +33,7 @@ contract AlphaCarToken is PausableToken, BurnableToken {
     // Individual transaction contribution min and max amounts
     // Set to 0 to switch off, or `x ether`
     // ------------------------------------------------------------------------
-  uint private CONTRIBUTIONS_MIN = 0.1 ether;
+  uint public CONTRIBUTIONS_MIN = 0.1 ether;
 
   uint constant public MIN_CROWSALE_TIME = 600;
 
@@ -43,7 +43,7 @@ contract AlphaCarToken is PausableToken, BurnableToken {
 
   uint public constant TOKENS_TOTAL = 100 * 10 ** 8 * DECIMALSFACTOR;
 
-  uint public constant TOKENS_CAP_ICO = 25 * 10 ** 8 * DECIMALSFACTOR;
+  uint public ICO_CAP = 30000 ether;
 
   string public name = "Alpha Car Token";
   
@@ -64,6 +64,17 @@ contract AlphaCarToken is PausableToken, BurnableToken {
   uint public startDate = 1521936000;
   uint public endDate = 1522511999;
 
+  address public wallet;
+
+  uint public act_now = 0;
+
+  uint public weiRaisedTotal = 0;
+
+  function preAlloc(uint weiAmt) public onlyOwner {
+    require(weiAmt <= ICO_CAP);
+    ICO_CAP = ICO_CAP.sub(weiAmt);
+  }
+
   function setStartDate(uint _startDate) public onlyOwner {
     uint nowTime = getNow();
     require(startDate > nowTime);
@@ -81,12 +92,6 @@ contract AlphaCarToken is PausableToken, BurnableToken {
     require(_endDate > nowTime);
     endDate = _endDate;
   }
-
-  address public wallet;
-
-  uint public act_now = 0;
-
-  uint public crowsaleShare = 0;
 
   function getNow() public view returns (uint) {
     if (act_now == 0) {
@@ -119,8 +124,8 @@ contract AlphaCarToken is PausableToken, BurnableToken {
     return getNow() > endDate;
   }
 
-  function getRemainingCrowsaleShare() public view returns (uint) {
-    return TOKENS_CAP_ICO - crowsaleShare;
+  function getRemainingWei() public view returns (uint) {
+    return ICO_CAP - weiRaisedTotal;
   }
 
   // ------------------------------------------------------------------------
@@ -140,9 +145,10 @@ contract AlphaCarToken is PausableToken, BurnableToken {
     require(weiRaised >= CONTRIBUTIONS_MIN);
 
     uint tokens = TOKEN_PER_ETHER.mul(weiRaised);
-    crowsaleShare = crowsaleShare.add(tokens);
 
-    require(crowsaleShare <= TOKENS_CAP_ICO);
+    weiRaisedTotal = weiRaisedTotal.add(weiRaised);
+
+    require(weiRaisedTotal <= ICO_CAP);
     
     weiBalances[participant] = weiBalances[participant].add(weiRaised);
 
