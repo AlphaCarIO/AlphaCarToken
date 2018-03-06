@@ -1,6 +1,7 @@
 pragma solidity ^0.4.18;
 
 import 'zeppelin-solidity/contracts/token/ERC20/PausableToken.sol';
+import 'zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol';
 
 // ----------------------------------------------------------------------------
 // Alpha Car Token smart contract - ERC20 Token Interface
@@ -8,7 +9,7 @@ import 'zeppelin-solidity/contracts/token/ERC20/PausableToken.sol';
 // The MIT Licence.
 // ----------------------------------------------------------------------------
 
-contract AlphaCarToken is PausableToken {
+contract AlphaCarToken is PausableToken, BurnableToken {
   
   string public symbol = "ACAR";
 

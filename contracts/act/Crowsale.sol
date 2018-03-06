@@ -96,22 +96,6 @@ contract Crowsale is Ownable {
     _;
   }
 
-  mapping(address => bool) userAddr;
-
-  function whitelist(address user) onlyOwner public {
-    userAddr[user] = true;
-  }
-
-  function unWhitelist(address user) onlyOwner public {
-    userAddr[user] = false;
-  }
-
-  function isInWhitelist(address user) public view
-    returns (bool)
-  {
-    return userAddr[user];
-  }
-
   function Crowsale(address _wallet, address tokenAddr) validAddress(_wallet) public {
     wallet = _wallet;
     token = Token(tokenAddr);
@@ -137,9 +121,6 @@ contract Crowsale is Ownable {
 
     uint nowTime = getNow();
     require(nowTime >= startDate && nowTime <= endDate);
-
-    require(isInWhitelist(msg.sender));
-    require(isInWhitelist(participant));
 
     uint weiRaised = msg.value;
 
