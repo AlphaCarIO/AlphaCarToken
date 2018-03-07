@@ -6,6 +6,7 @@ const tokenpether = 60000;
 const DECIMALS = 18;
 const ONE = 10 ** DECIMALS;
 const total = BigNumber(100 * 10 ** 8 * ONE);
+const cap = BigNumber(30000 * ONE);
 const amt = BigNumber(100000 * ONE);
 const amt1 = BigNumber(10000 * ONE);
 
@@ -22,6 +23,7 @@ module.exports = {
     DECIMALS,
     tokenpether,
     total,
+    cap,
     amt,
     amt1,
     day,

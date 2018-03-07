@@ -1,46 +1,11 @@
 #####
-##Makefile for AAAToken project
+##Makefile for AlphaCarToken project
 #####
 
 .PHONY : prepare test cc ropsten
-.IGNORE : del_testenv ropsten
+.IGNORE : ropsten
 
-DATADIR=./test_ethereum
-
-GETH_TEST_OPT=--datadir=$(DATADIR) --identity=test_demo --networkid=8341 --nodiscover --maxpeers 0 --fast --wsapi admin,eth,miner \
-	--rpcapi db,eth,net,web3,admin --rpc --rpcaddr 0.0.0.0 --port 31313 --cache=512 --etherbase=0xda83aee0f49802a331d455f503341a5fdcbde923 \
-	--mine --minerthreads 4 --rpccorsdomain "*"
-
-UNLOCK_LIST=--password geth-testenv/password \
---unlock 0xbb65f9eb3a78ff3ebbc91e182ad9f3337b6329db,0x86daa582987c76b513574919163b9c2925ef7134,0x509665305fe40c916eedafc7442a25acd8896fb6,0xbca685cb5dfd40658eabe435c56559915aa1b815,0xda83aee0f49802a331d455f503341a5fdcbde923,0xcd98183b5497ab12ca22421a48c92864524da3f0,
-#coinbase: 0xda83aee0f49802a331d455f503341a5fdcbde923
-#owner: 0xbb65f9eb3a78ff3ebbc91e182ad9f3337b6329db
-#wallet: 0xbca685cb5dfd40658eabe435c56559915aa1b815
-#wallet: 0xeF729e3e42c757e88aFB2C910C619b3aDf4472e6 (ganache)
-
-JS_FILE=geth-testenv/preload_aaatoken.js
-OUTPUT_BYTECODE=geth-testenv/bytecode_with_param.txt
-JS_FILE_MOCK=geth-testenv/preload_aaatoken_mock.js
-OUTPUT_BYTECODE_MOCK=geth-testenv/bytecode_mock_with_param.txt
-PRELOAD_OPT=--preload $(JS_FILE)
-#PRELOAD_OPT=
-
-GETH=geth
-DEBUG_OPT=
-
-#GETH=/home/leo/gopath/src/github.com/ethereum/go-ethereum/build/bin/geth
-#DEBUG_OPT=--pprof --verbosity 5
-#ACC=31Da4C09fCEF33D97A19eAF6BC26d126cBb62ADc
-#ACC=31da4c09fcef33d97a19eaf6bc26d126cbb62adc
-#ACC=bca685cb5dfd40658eabe435c56559915aa1b815
-ACC=2ac91344e9f023954dfe88efd5f7770db85eaba3
 NETWORK_GETH_DEV=--network geth_dev
-
-ifdef A
-ACC=$(A)
-endif
-
-ACC_L=$(shell echo $(ACC) | tr A-Z a-z)
 
 SOLC_OPT=--pretty-json --abi --bin --optimize --optimize-runs 200
 
@@ -49,59 +14,17 @@ prepare:
 	npm i -g truffle-flattener
 	npm i
 
-gen_bytes:
-	cd geth-testenv && python gen_preloadjs.py $(ACC_L)
-	$(GETH) $(DEBUG_OPT) $(GETH_TEST_OPT) js $(JS_FILE) | grep $(ACC_L) > $(OUTPUT_BYTECODE)
-	$(GETH) $(DEBUG_OPT) $(GETH_TEST_OPT) js $(JS_FILE_MOCK) | grep $(ACC_L) > $(OUTPUT_BYTECODE_MOCK)
-
 cc:
 	rm -rf build
 	truffle compile
-	truffle-flattener contracts/act/AlphaCarToken.sol > build/AlphaCarToken.sol
+	truffle-flattener contracts/token/AlphaCarToken.sol > build/AlphaCarToken.sol
 	truffle-flattener contracts/mocks/TokenMock.sol > build/TokenMock.sol
 	
 	solc -o build/AlphaCarToken $(SOLC_OPT) build/AlphaCarToken.sol
 	solc -o build/TokenMock $(SOLC_OPT) build/TokenMock.sol
 
-wallet:
-	ethereumwallet --rpc $(DATADIR)/geth.ipc --reset-tabs --node=geth --gethpath=$(GETH) --network=test \
-		--node-datadir=$(DATADIR)/wallet --syncmode=light $(O)
-	#--mode=mist #--syncmode=light --gethpath=$(GETH) --network=test --node=geth $(O)
-
-unittest_ganache:
+ut:
 	truffle test $(F)
-
-unittest_geth:
-	truffle test $(NETWORK_GETH_DEV) $(F)
-
-ropsten:
-	rm -rf ./ropsten
-	geth --testnet --preload geth-testenv/preload_aaatoken_mock.js --datadir="./ropsten" \
-	--bootnodes "enode://20c9ad97c081d63397d7b685a412227a40e23c8bdc6688c6f37e97cfbc22d2b4d1db1510d8f61e6a8866ad7f0e17c02b14182d37ea7c3c8b9c2683aeb6b733a1@52.169.14.227:30303,enode://6ce05930c72abc632c58e2e4324f7c7ea478cec0ed4fa2528982cf34483094e9cbc9216e7aa349691242576d552a2a56aaeae426c5303ded677ce455ba1acd9d@13.84.180.240:30303" \
-	--rpcapi "admin,debug,eth,miner,net,personal,rpc,txpool,web3" \
-	--rpc --rpcaddr 127.0.0.1 --rpcport 8545 \
-	--rpccorsdomain '*' \
-	--ipcdisable console 2>>geth.log
-
-init_test_geth: del_test_geth
-	$(GETH) $(DEBUG_OPT) $(GETH_TEST_OPT) init geth-testenv/genesis.json
-
-del_test_geth:
-	cd $(DATADIR) && ls |grep -v keystore| xargs rm -rf
-	#cd $(DATADIR) && rm -r `ls | grep -v keystore`
-	rm -rf geth.log
-
-start_test_geth:
-	$(GETH) $(DEBUG_OPT) $(GETH_TEST_OPT) $(UNLOCK_LIST) $(PRELOAD_OPT) console 2>>geth.log
 
 mig_test_geth:
 	truffle migrate $(NETWORK_GETH_DEV)
-
-watch_test_geth_log:
-	tail -f geth.log
-
-ubuntu_get_geth:
-	sudo apt-get install software-properties-common
-	sudo add-apt-repository -y ppa:ethereum/ethereum
-	sudo apt-get update
-	sudo apt-get install ethereum

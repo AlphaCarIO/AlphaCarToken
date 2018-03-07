@@ -23,7 +23,7 @@ contract('AlphaCarToken', function (accounts) {
 
     await token.buyTokens(accounts[1], {gas: cc.gas_amt, from: accounts[1], value: web3.toWei("1", "Ether")});
     
-    var balance = await token.balanceOf.call(accounts[1])
+    balance = await token.balanceOf.call(accounts[1])
     assert.strictEqual(balance.toNumber(), cc.tokenpether * cc.ONE, "step 1")
 
     balance = await token.balanceOf.call(wallet)
@@ -39,7 +39,7 @@ contract('AlphaCarToken', function (accounts) {
 
     token.transfer(accounts[2], (cc.tokenpether - 1) * cc.ONE, {from: accounts[1]})
 
-    var balance = await token.balanceOf.call(accounts[2])
+    balance = await token.balanceOf.call(accounts[2])
     assert.strictEqual(balance.toNumber(), cc.tokenpether * cc.ONE, "step 3")
 
     balance = await token.balanceOf.call(accounts[1])
@@ -47,10 +47,10 @@ contract('AlphaCarToken', function (accounts) {
 
     await token.buyTokens(accounts[1], {gas: cc.gas_amt, from: accounts[1], value: web3.toWei("1", "Ether")});
 
-    var balance = await token.balanceOf.call(accounts[1])
+    balance = await token.balanceOf.call(accounts[1])
     assert.strictEqual(balance.toNumber(), cc.tokenpether * cc.ONE, "step 5")
 
-    var balance = await token.balanceOf.call(accounts[2])
+    balance = await token.balanceOf.call(accounts[2])
     assert.strictEqual(balance.toNumber(), cc.tokenpether * cc.ONE, "step 6")
 
     balance = await token.balanceOf.call(wallet)

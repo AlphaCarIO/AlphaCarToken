@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import '../act/AlphaCarToken.sol';
+import './../token/AlphaCarToken.sol';
 
 // @dev TokenMock mocks current time
 

@@ -20,7 +20,7 @@ contract('AlphaCarToken', function (accounts) {
   })
 
   it('creation: should create an initial balance for the owner', async () => {
-    var balance = await token.balanceOf.call(wallet)
+    balance = await token.balanceOf.call(wallet)
     assert.strictEqual(balance.toNumber(), cc.total.toNumber(), "step 2: balance should be "+ cc.total +"!")
     balance = await token.balanceOf.call(accounts[0])
     assert.strictEqual(balance.toNumber(), 0, "step 2: balance should be 0!")

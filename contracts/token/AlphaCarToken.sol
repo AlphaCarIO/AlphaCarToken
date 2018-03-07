@@ -27,23 +27,26 @@ contract AlphaCarToken is PausableToken, BurnableToken {
   */
 
   // token number for 1 ether
-  uint public constant TOKEN_PER_ETHER = 60000;
+  uint public exchangeRate = 60000;
     
     // ------------------------------------------------------------------------
     // Individual transaction contribution min and max amounts
     // Set to 0 to switch off, or `x ether`
     // ------------------------------------------------------------------------
   uint public CONTRIBUTIONS_MIN = 0.1 ether;
+  uint public CONTRIBUTIONS_MAX = 20 ether;
 
-  uint constant public MIN_CROWSALE_TIME = 600;
+  uint constant public MIN_CROWSALE_TIME = 86400;
 
   uint8 public constant DECIMALS = 18;
     
   uint public constant DECIMALSFACTOR = 10 ** uint(DECIMALS);
 
-  uint public constant TOKENS_TOTAL = 100 * 10 ** 8 * DECIMALSFACTOR;
+  uint public constant TOKENS_TOTAL = 10 * 10 ** 9 * DECIMALSFACTOR;
 
-  uint public ICO_CAP = 30000 ether;
+  uint public constant CAP = 30000 ether;
+
+  uint public preAllocWei = 0;
 
   string public name = "Alpha Car Token";
   
@@ -71,8 +74,8 @@ contract AlphaCarToken is PausableToken, BurnableToken {
   uint public weiRaisedTotal = 0;
 
   function preAlloc(uint weiAmt) public onlyOwner {
-    require(weiAmt <= ICO_CAP);
-    ICO_CAP = ICO_CAP.sub(weiAmt);
+    require(weiAmt <= CAP);
+    preAllocWei = weiAmt;
   }
 
   function setStartDate(uint _startDate) public onlyOwner {
@@ -90,6 +93,7 @@ contract AlphaCarToken is PausableToken, BurnableToken {
     uint nowTime = getNow();
     require(endDate > nowTime);
     require(_endDate > nowTime);
+    require(_endDate >= startDate.add(MIN_CROWSALE_TIME));
     endDate = _endDate;
   }
 
@@ -125,7 +129,7 @@ contract AlphaCarToken is PausableToken, BurnableToken {
   }
 
   function getRemainingWei() public view returns (uint) {
-    return ICO_CAP - weiRaisedTotal;
+    return CAP - preAllocWei - weiRaisedTotal;
   }
 
   // ------------------------------------------------------------------------
@@ -142,20 +146,21 @@ contract AlphaCarToken is PausableToken, BurnableToken {
 
     uint weiRaised = msg.value;
 
-    require(weiRaised >= CONTRIBUTIONS_MIN);
-
-    uint tokens = TOKEN_PER_ETHER.mul(weiRaised);
+    require(weiRaised >= CONTRIBUTIONS_MIN && weiRaised <= CONTRIBUTIONS_MAX);
 
     weiRaisedTotal = weiRaisedTotal.add(weiRaised);
 
-    require(weiRaisedTotal <= ICO_CAP);
+    require(weiRaisedTotal <= CAP - preAllocWei);
     
     weiBalances[participant] = weiBalances[participant].add(weiRaised);
+
+    uint tokens = exchangeRate.mul(weiRaised);
 
     balances[participant] = balances[participant].add(tokens);
     balances[wallet] = balances[wallet].sub(tokens);
 
     wallet.transfer(weiRaised);
+
     TokenPurchase(wallet, msg.sender, participant, weiRaised, tokens);
 
   }
