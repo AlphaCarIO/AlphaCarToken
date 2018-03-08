@@ -1,5 +1,6 @@
 {
     "provider_url": "http://localhost:8545",
+    "file_name": "AlphaCarToken",
     "abi_file": "path/to/your/abi/file",
     "bytecode_file": "path/to/your/bytecode/file",
     "symbol": "ACAR",
