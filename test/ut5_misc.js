@@ -16,24 +16,24 @@ let wallet
 contract('AlphaCarToken', function (accounts) {
   beforeEach(async () => {
     wallet = accounts[5]
-    token = await TokenMock.new(cc.symbol, wallet, {from: accounts[0]})
+    token = await TokenMock.new(cc.symbol, cc.name, wallet, {from: accounts[0]})
     console.log(token.address)
 
   })
   
   it('change ownership', async () => {
 
-    await token.setStartDate(cc.START_DATE - 1);
+    await token.setStartTime(cc.START_DATE - 1);
     
     await token.transferOwnership(accounts[4]);
     
-    await utils.expectThrow(token.setStartDate(cc.START_DATE));
+    await utils.expectThrow(token.setStartTime(cc.START_DATE));
 
-    await token.setStartDate(cc.START_DATE - 1, {from: accounts[4]});
+    await token.setStartTime(cc.START_DATE - 1, {from: accounts[4]});
 
-    startDate = await token.startDate.call();
+    startTime = await token.startTime.call();
 
-    assert.strictEqual(startDate.toNumber(), cc.START_DATE - 1, "step 1");
+    assert.strictEqual(startTime.toNumber(), cc.START_DATE - 1, "step 1");
 
     await utils.expectThrow(token.transferOwnership(accounts[3]));
 

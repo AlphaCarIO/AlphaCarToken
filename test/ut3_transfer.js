@@ -16,7 +16,7 @@ let wallet
 contract('AlphaCarToken', function (accounts) {
   beforeEach(async () => {
     wallet = accounts[5]
-    token = await TokenMock.new(cc.symbol, wallet, {from: accounts[0]})
+    token = await TokenMock.new(cc.symbol, cc.name, wallet, {from: accounts[0]})
     console.log(token.address)
 
     await token.setNow(cc.START_DATE);

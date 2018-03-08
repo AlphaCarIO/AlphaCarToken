@@ -6,12 +6,21 @@ import './../token/AlphaCarToken.sol';
 
 contract TokenMock is AlphaCarToken {
 
-  function TokenMock(string symbol, address wallet) AlphaCarToken(symbol, wallet) public {
+  uint public act_now = 0;
+
+  function TokenMock(string symbol, string name, address wallet) AlphaCarToken(symbol, name, wallet) public {
   }
 
   //this function will never be used in production env.
   function setNow(uint _now) public onlyOwner {
     act_now = _now;
+  }
+
+  function getNow() public view returns (uint) {
+    if (act_now == 0) {
+      return now;
+    }
+    return act_now;
   }
 
 }

@@ -15,7 +15,7 @@ let wallet
 contract('AlphaCarToken', function (accounts) {
   beforeEach(async () => {
     wallet = accounts[5]
-    token = await TokenMock.new(cc.symbol, wallet, {from: accounts[0]})
+    token = await TokenMock.new(cc.symbol, cc.name, wallet, {from: accounts[0]})
     console.log(token.address)
   })
 
@@ -28,7 +28,7 @@ contract('AlphaCarToken', function (accounts) {
 
   it('creation: test correct setting of basic information', async () => {
     const name = await token.name.call()
-    assert.strictEqual(name, 'Alpha Car Token')
+    assert.strictEqual(name, cc.name)
 
     const decimals = await token.decimals.call()
     assert.strictEqual(decimals.toNumber(), cc.DECIMALS)

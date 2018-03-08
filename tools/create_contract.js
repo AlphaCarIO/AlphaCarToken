@@ -25,7 +25,7 @@ var bytecode_data = "0x" + fs.readFileSync(config.bytecode_file,'utf-8');
 var Token = web3.eth.contract(abi_data);
 
 // "ACAR","0xbe3b10d99239e507c6d18184b49c9b11fa2c358a"
-byteCodeWithParam = Token.new.getData(config.symbol, config.wallet_addr, {data: bytecode_data});
+byteCodeWithParam = Token.new.getData(config.symbol, config.name, config.wallet_addr, {data: bytecode_data})
 //console.log("byteCodeWithParam:" + byteCodeWithParam);
 
 fs.writeFileSync(output_file, byteCodeWithParam, 'utf-8')

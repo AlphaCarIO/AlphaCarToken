@@ -1,6 +1,7 @@
 const BigNumber = require('bignumber.js');
 
 const symbol = "ACAR";
+const name = "Alpha Car Token";
 const tokenpether = 60000;
 
 const DECIMALS = 18;
@@ -13,12 +14,13 @@ const amt1 = BigNumber(10000 * ONE);
 const day = 86400;
 
 const START_DATE = 1521936000;
-const END_DATE = 1522511999;
+const END_DATE = START_DATE + 7 * day;
 
 const gas_amt = 150000;
 
 module.exports = {
     symbol,
+    name,
     ONE,
     DECIMALS,
     tokenpether,
