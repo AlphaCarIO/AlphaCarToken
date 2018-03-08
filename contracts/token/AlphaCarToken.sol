@@ -59,10 +59,10 @@ contract AlphaCarToken is PausableToken, BurnableToken {
     // ------------------------------------------------------------------------
     // Tranche 1 token sale start time and end time
     // Do not use the `now` function here
-    // ICO start - Mar 25th 2018 @ 8:00:00
-    // ICO end - Mar 31th 2018 @ 23:59:59
+    // ICO start - APR. 15th 2018 @ 8:00:00
+    // default crowdsale period: 7 days
     // ------------------------------------------------------------------------
-  uint public startTime = 1521936000;
+  uint public startTime = 1523750400;
   uint public endTime = startTime.add(MIN_CROWSALE_TIME);
 
   address public wallet;
