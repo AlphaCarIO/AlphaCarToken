@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import '../act/Crowsale.sol';
+import '../token/MyCrowdsale.sol';
 
 // ----------------------------------------------------------------------------
 // Alpha Car Token smart contract - ERC20 Token Interface
@@ -8,7 +8,7 @@ import '../act/Crowsale.sol';
 // The MIT Licence.
 // ----------------------------------------------------------------------------
 
-contract CrowsaleMock is Crowsale {
+contract CrowdsaleMock is MyCrowdsale {
 
   uint public fakeNow = 0;
 
@@ -23,7 +23,7 @@ contract CrowsaleMock is Crowsale {
     fakeNow = _now;
   }
 
-  function CrowsaleMock(address _wallet, address tokenAddr) Crowsale(_wallet, tokenAddr) public {
+  function CrowdsaleMock(address _wallet, address tokenAddr) MyCrowdsale(_wallet, tokenAddr) public {
   }
   
 }

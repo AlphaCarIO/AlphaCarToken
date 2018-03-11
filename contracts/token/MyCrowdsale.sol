@@ -9,7 +9,7 @@ interface Token {
   function approve(address spender, uint256 value) public returns (bool);
 }
 
-contract Crowsale is Ownable {
+contract MyCrowdsale is Ownable {
 
   using SafeMath for uint;
 
@@ -29,17 +29,13 @@ contract Crowsale is Ownable {
     // ------------------------------------------------------------------------
   uint public CONTRIBUTIONS_MIN = 0.1 ether;
 
-  uint constant public OFFSET = 420;
-
-  uint constant public MIN_CROWSALE_TIME = 3600;
+  uint constant public MIN_CROWSALE_TIME = 86400 * 7;
 
   uint8 public constant DECIMALS = 18;
     
   uint public constant DECIMALSFACTOR = 10 ** uint(DECIMALS);
 
   uint public constant TOKENS_CAP_ICO = 25 * 10 ** 8 * DECIMALSFACTOR;
-  
-  string public symbol;
 
   Token public token;
 
@@ -57,13 +53,8 @@ contract Crowsale is Ownable {
     return weiBalances[_owner];
   }
 
-  uint public fakeNow = 0;
-
   function getNow() public view returns (uint) {
-    if (fakeNow == 0) {
-      return now;
-    }
-    return fakeNow;
+    return now;
   }
 
   // @return true if crowdsale event has ended
@@ -96,7 +87,7 @@ contract Crowsale is Ownable {
     _;
   }
 
-  function Crowsale(address _wallet, address tokenAddr) validAddress(_wallet) public {
+  function MyCrowdsale(address _wallet, address tokenAddr) validAddress(_wallet) public {
     wallet = _wallet;
     token = Token(tokenAddr);
   }
