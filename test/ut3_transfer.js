@@ -1,30 +1,38 @@
 const BigNumber = require('bignumber.js');
 const utils = require('./utils')
 const AlphaCarToken = artifacts.require('AlphaCarToken')
+const Crowdsale = artifacts.require("./ACTCrowdsaleMock")
 
 const cc = require('./constants')
 
 let token
-let wallet
+let crowsale
 
-// accounts[0] = Contract Owner
-// accounts[1] = test account
-// accounts[2] = test account
-// accounts[5] = WALLET_ACCOUNT
+let wallet
+let token_owner
+let crowdsale_owner
 
 contract('AlphaCarToken', function (accounts) {
   beforeEach(async () => {
     wallet = accounts[5]
-    token = await AlphaCarToken.new({from: accounts[0]})
+    token_owner = accounts[0]
+    crowdsale_owner = accounts[4]
+
+    token = await AlphaCarToken.new({from: token_owner})
     console.log(token.address)
 
-    await token.setNow(cc.ICO_START_DATE);
-    await token.proxyPayment(accounts[1], {gas: cc.gas_amt, from: accounts[1], to: token.address, value: web3.toWei("1", "Ether")});
+    crowdsale = await Crowdsale.new(cc.tokenpether, wallet, token.address, token_owner,
+      cc.cap, cc.START_DATE, cc.END_DATE, {gas: cc.gas_amt, from: crowdsale_owner})
+
+    await token.approve(crowdsale.address, cc.cap, {from: token_owner});
+
+    await crowdsale.setNow(cc.START_DATE, {from: crowdsale_owner});
+    await crowdsale.buyTokens(accounts[1], {gas: cc.gas_amt, from: accounts[1], value: web3.toWei("1", "Ether")});
     
     var balance = await token.balanceOf.call(accounts[1])
     assert.strictEqual(balance.toNumber(), cc.tokenpether * cc.ONE, "step 1")
 
-    balance = await token.balanceOf.call(wallet)
+    balance = await token.balanceOf.call(token_owner)
     assert.strictEqual(balance.toNumber(), cc.total.minus(cc.tokenpether * cc.ONE).toNumber(), "step 2")
 
   })
@@ -43,7 +51,7 @@ contract('AlphaCarToken', function (accounts) {
     balance = await token.balanceOf.call(accounts[1])
     assert.strictEqual(balance.toNumber(), 0, "step 4")
 
-    await token.proxyPayment(accounts[1], {gas: cc.gas_amt, from: accounts[1], to: token.address, value: web3.toWei("1", "Ether")});
+    await crowdsale.buyTokens(accounts[1], {gas: cc.gas_amt, from: accounts[1], value: web3.toWei("1", "Ether")});
 
     var balance = await token.balanceOf.call(accounts[1])
     assert.strictEqual(balance.toNumber(), cc.tokenpether * cc.ONE, "step 5")
@@ -51,7 +59,7 @@ contract('AlphaCarToken', function (accounts) {
     var balance = await token.balanceOf.call(accounts[2])
     assert.strictEqual(balance.toNumber(), cc.tokenpether * cc.ONE, "step 6")
 
-    balance = await token.balanceOf.call(wallet)
+    balance = await token.balanceOf.call(token_owner)
     assert.strictEqual(balance.toNumber(), cc.total.minus(2 * cc.tokenpether * cc.ONE).toNumber(), "step 7")
 
   })

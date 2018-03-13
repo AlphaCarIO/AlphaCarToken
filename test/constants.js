@@ -16,7 +16,7 @@ const day = 86400;
 const START_DATE = 1523750400;
 const END_DATE = START_DATE + 7 * day;
 
-const gas_amt = 150000;
+const gas_amt = 4000000;
 
 module.exports = {
     symbol,
