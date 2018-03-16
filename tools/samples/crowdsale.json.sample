@@ -1,0 +1,17 @@
+{
+    "type": "crowdsale",
+    "out_dir": "",
+    "provider_url": "http://localhost:8545",
+    "file_name": "ACTCrowdsale",
+    "abi_file": "../build/ACTCrowdsaleMock/ACTCrowdsale.abi",
+    "bytecode_file": "../build/ACTCrowdsaleMock/ACTCrowdsale.bin",
+    "rate": 60000,
+    "wallet": "",
+    "token_contract_addr": "",
+    "token_wallet_addr": "",
+    "cap": 18e+26,
+    "open_time": 1523750400,
+    "close_time": 1525103999,
+    "gas": 3000000,
+    "gasPrice": 1e+9
+}

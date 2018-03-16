@@ -1,0 +1,10 @@
+{
+    "type": "token",
+    "out_dir": "",
+    "provider_url": "http://localhost:8545",
+    "file_name": "AlphaCarToken",
+    "abi_file": "../build/AlphaCarToken/AlphaCarToken.abi",
+    "bytecode_file": "../build/AlphaCarToken/AlphaCarToken.bin",
+    "gas": 3000000,
+    "gasPrice": 1e+9
+}

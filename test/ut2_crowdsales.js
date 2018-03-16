@@ -44,7 +44,26 @@ contract('Crowsale', function (accounts) {
 
   })
 
-  
+  it('do crowdsales in ICO. at the beginning of ICO. reapprove!', async () => {
+
+    await token.approve(crowdsale.address, (cc.tokenpether - 1) * cc.ONE, {from: token_owner});
+
+    await crowdsale.setNow(cc.START_DATE, {from: crowdsale_owner})
+
+    _now = await crowdsale.getNow.call()
+    assert.strictEqual(_now.toNumber(), cc.START_DATE, "unexpected time for now!")
+    
+    await utils.expectThrow(crowdsale.buyTokens(accounts[1], {gas: cc.gas_amt, from: accounts[1], 
+      value: web3.toWei("1", "Ether")}));
+    
+    balance = await token.balanceOf.call(accounts[1])
+    assert.strictEqual(balance.toNumber(), 0, "step 1")
+
+    balance = await token.balanceOf.call(token_owner)
+    assert.strictEqual(balance.toNumber(), cc.total.toNumber(), "step 2")
+    
+  })
+
   it('do crowdsales in ICO. at the beginning of ICO', async () => {
 
     await crowdsale.setNow(cc.START_DATE, {from: crowdsale_owner})
@@ -67,7 +86,6 @@ contract('Crowsale', function (accounts) {
 
     _now = await crowdsale.getNow.call()
     assert.strictEqual(_now.toNumber(), cc.END_DATE, "unexpected time for now!")
-
 
     await crowdsale.buyTokens(accounts[1], {gas: cc.gas_amt, from: accounts[1], value: web3.toWei("1", "Ether")});
 
