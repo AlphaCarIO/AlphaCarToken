@@ -26,7 +26,7 @@ contract AlphaCarToken is PausableToken, BurnableToken {
   }
 
   function () payable public {
-    revert();
+    throw;
   }
 
 }

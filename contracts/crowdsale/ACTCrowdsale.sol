@@ -53,8 +53,13 @@ contract ACTCrowdsale is Crowdsale, Ownable {
     return weiRaised >= cap;
   }
 
+  function remainingAllowanceTokens() public view returns (uint256) {
+    return token.allowance(tokenWallet, this);
+  }
+
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal onlyWhileOpen {
     super._preValidatePurchase(_beneficiary, _weiAmount);
+    //deal with cap.
     require(weiRaised.add(_weiAmount) <= cap);
   }
 
