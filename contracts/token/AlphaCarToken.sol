@@ -13,7 +13,7 @@ contract AlphaCarToken is PausableToken, BurnableToken {
   
   string public symbol = "ACAR";
 
-  string public name = "Alpha Car Token";
+  string public name = "AlphaCar Token";
   
   uint8 public decimals = 18;
 
@@ -26,7 +26,7 @@ contract AlphaCarToken is PausableToken, BurnableToken {
   }
 
   function () payable public {
-    throw;
+    revert();
   }
 
 }

@@ -1,46 +1,9 @@
 #####
-##Makefile for AAAToken project
+##Makefile for AlphaCar Token project
 #####
 
-.PHONY : prepare test cc ropsten
-.IGNORE : del_testenv ropsten
-
-DATADIR=./test_ethereum
-
-GETH_TEST_OPT=--datadir=$(DATADIR) --identity=test_demo --networkid=8341 --nodiscover --maxpeers 0 --fast --wsapi admin,eth,miner \
-	--rpcapi db,eth,net,web3,admin --rpc --rpcaddr 0.0.0.0 --port 31313 --cache=512 --etherbase=0xda83aee0f49802a331d455f503341a5fdcbde923 \
-	--mine --minerthreads 4 --rpccorsdomain "*"
-
-UNLOCK_LIST=--password geth-testenv/password \
---unlock 0xbb65f9eb3a78ff3ebbc91e182ad9f3337b6329db,0x86daa582987c76b513574919163b9c2925ef7134,0x509665305fe40c916eedafc7442a25acd8896fb6,0xbca685cb5dfd40658eabe435c56559915aa1b815,0xda83aee0f49802a331d455f503341a5fdcbde923,0xcd98183b5497ab12ca22421a48c92864524da3f0,
-#coinbase: 0xda83aee0f49802a331d455f503341a5fdcbde923
-#owner: 0xbb65f9eb3a78ff3ebbc91e182ad9f3337b6329db
-#wallet: 0xbca685cb5dfd40658eabe435c56559915aa1b815
-#wallet: 0xeF729e3e42c757e88aFB2C910C619b3aDf4472e6 (ganache)
-
-JS_FILE=geth-testenv/preload_aaatoken.js
-OUTPUT_BYTECODE=geth-testenv/bytecode_with_param.txt
-JS_FILE_MOCK=geth-testenv/preload_aaatoken_mock.js
-OUTPUT_BYTECODE_MOCK=geth-testenv/bytecode_mock_with_param.txt
-PRELOAD_OPT=--preload $(JS_FILE)
-#PRELOAD_OPT=
-
-GETH=geth
-DEBUG_OPT=
-
-#GETH=/home/leo/gopath/src/github.com/ethereum/go-ethereum/build/bin/geth
-#DEBUG_OPT=--pprof --verbosity 5
-#ACC=31Da4C09fCEF33D97A19eAF6BC26d126cBb62ADc
-#ACC=31da4c09fcef33d97a19eaf6bc26d126cbb62adc
-#ACC=bca685cb5dfd40658eabe435c56559915aa1b815
-ACC=2ac91344e9f023954dfe88efd5f7770db85eaba3
-NETWORK_GETH_DEV=--network geth_dev
-
-ifdef A
-ACC=$(A)
-endif
-
-ACC_L=$(shell echo $(ACC) | tr A-Z a-z)
+.PHONY : prepare cc
+.IGNORE : prepare
 
 SOLC_OPT=--pretty-json --abi --bin --optimize --optimize-runs 200
 

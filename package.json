@@ -1,5 +1,5 @@
 {
-  "name": "actoken",
+  "name": "alphacartoken",
   "version": "1.0.0",
   "description": "",
   "main": "truffle-config.js",
@@ -8,18 +8,18 @@
   },
   "dependencies": {
     "web3": "^0.20.6",
-    "zeppelin-solidity": "^1.7.0"
+    "zeppelin-solidity": "^1.8.0"
   },
   "devDependencies": {
-    "bignumber.js": "^5.0.0"
+    "bignumber.js": "^6.0.0"
   },
   "scripts": {
     "test": "truffle test"
   },
   "repository": {
     "type": "git",
-    "url": "https://gitee.com/bcgrp/ACToken"
+    "url": "ssh://git@github.com/AlphaCarIO/AlphaCarToken"
   },
   "author": "",
-  "license": "ISC"
+  "license": "MIT"
 }
