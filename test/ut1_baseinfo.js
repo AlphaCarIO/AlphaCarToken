@@ -27,7 +27,7 @@ contract('AlphaCarToken', function (accounts) {
 
   it('creation: test correct setting of basic information', async () => {
     const name = await token.name.call()
-    assert.strictEqual(name, 'Alpha Car Token')
+    assert.strictEqual(name, 'AlphaCar Token')
 
     const decimals = await token.decimals.call()
     assert.strictEqual(decimals.toNumber(), cc.DECIMALS)

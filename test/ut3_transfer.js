@@ -12,7 +12,7 @@ let wallet
 let token_owner
 let crowdsale_owner
 
-contract('AlphaCarToken', function (accounts) {
+contract('Crowdsale', function (accounts) {
   beforeEach(async () => {
     wallet = accounts[5]
     token_owner = accounts[0]
