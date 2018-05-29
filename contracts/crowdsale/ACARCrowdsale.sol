@@ -2,6 +2,7 @@ pragma solidity ^0.4.21;
 
 import "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
+import 'zeppelin-solidity/contracts/lifecycle/Destructible.sol';
 import "zeppelin-solidity/contracts/crowdsale/emission/AllowanceCrowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
@@ -9,18 +10,19 @@ import "zeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
 /**
  * @title ACTCrowdsale
  */
-contract ACARCrowdsale is Crowdsale, AllowanceCrowdsale, CappedCrowdsale, TimedCrowdsale, Ownable {
+contract ACARCrowdsale is Crowdsale, AllowanceCrowdsale, CappedCrowdsale, TimedCrowdsale, Destructible {
   using SafeMath for uint256;
 
-  uint256 public openingTime;
-  uint256 public closingTime;
+  event log(address indexed sender, string log);
+
 
   function getNow() public view returns (uint) {
     return now;
   }
 
-  modifier onlyWhileOpen {
+  modifier onlyWhileOpen2 {
     uint _now = getNow();
+    
     require(_now >= openingTime && _now <= closingTime);
     _;
   }
@@ -35,31 +37,30 @@ contract ACARCrowdsale is Crowdsale, AllowanceCrowdsale, CappedCrowdsale, TimedC
     CappedCrowdsale(_cap)
     TimedCrowdsale(_openingTime, _closingTime) public
   {
-    require(_cap > 0);
-    require(_openingTime >= getNow());
-    require(_closingTime >= _openingTime);
-
-/*
-    cap = _cap;
-    tokenWallet = _tokenWallet;
-
-    openingTime = _openingTime;
-    closingTime = _closingTime;
-    */
   }
 
   function hasClosed() public view returns (bool) {
     return getNow() > closingTime;
   }
 
-  function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal onlyWhileOpen {
-    super._preValidatePurchase(_beneficiary, _weiAmount);
-    //deal with cap.
+//
+  function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal onlyWhileOpen2 {
     require(weiRaised.add(_weiAmount) <= cap);
+    Crowdsale._preValidatePurchase(_beneficiary, _weiAmount);
   }
 
   function _deliverTokens(address _beneficiary, uint256 _tokenAmount) internal {
     token.transferFrom(tokenWallet, _beneficiary, _tokenAmount);
+  }
+
+  function destroy() onlyOwner public {
+    require(getNow() > closingTime);
+    selfdestruct(owner);
+  }
+
+  function destroyAndSend(address _recipient) onlyOwner public {
+    require(getNow() > closingTime);
+    selfdestruct(_recipient);
   }
 
 }

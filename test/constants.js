@@ -13,7 +13,7 @@ const amt1 = BigNumber(10000 * ONE);
 
 const day = 86400;
 
-const START_DATE = 1527782400;
+const START_DATE = 1530374400;
 const END_DATE = START_DATE + 7 * day;
 
 const gas_amt = 4000000;

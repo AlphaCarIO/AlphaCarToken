@@ -22,7 +22,7 @@ contract('AlphaCarToken', function (accounts) {
     crowdsale_owner = accounts[4]
     token = await AlphaCarToken.new({from: token_wallet})
     console.log('token.address:', token.address)
-    crowdsale = await Crowdsale.new(cc.tokenpether, wallet, token.address, token_wallet,
+    crowdsale = await Crowdsale.new(cc.rate, wallet, token.address, token_wallet,
       cc.cap, cc.START_DATE, cc.END_DATE, {gas: cc.gas_amt, from: crowdsale_owner})
     console.log('crowdsale.address:', crowdsale.address)
 
