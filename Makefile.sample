@@ -17,10 +17,10 @@ cc:
 	mkdir -p build
 	truffle compile
 	truffle-flattener contracts/token/AlphaCarToken.sol > build/AlphaCarToken.sol
-	truffle-flattener contracts/mocks/ACTCrowdsaleMock.sol > build/ACTCrowdsaleMock.sol
+	truffle-flattener contracts/mocks/ACARCrowdsaleMock.sol > build/ACARCrowdsaleMock.sol
 
 	solc -o build/AlphaCarToken $(SOLC_OPT) build/AlphaCarToken.sol
-	solc -o build/ACTCrowdsaleMock $(SOLC_OPT) build/ACTCrowdsaleMock.sol
+	solc -o build/ACARCrowdsaleMock $(SOLC_OPT) build/ACARCrowdsaleMock.sol
 
 ubuntu_get_geth:
 	sudo apt-get install software-properties-common

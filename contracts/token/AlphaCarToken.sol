@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 import 'zeppelin-solidity/contracts/token/ERC20/PausableToken.sol';
 import 'zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol';
@@ -22,7 +22,7 @@ contract AlphaCarToken is PausableToken, BurnableToken {
   function AlphaCarToken() public {
     totalSupply_ = INITIAL_SUPPLY;
     balances[msg.sender] = INITIAL_SUPPLY;
-    Transfer(0x0, msg.sender, INITIAL_SUPPLY);
+    emit Transfer(0x0, msg.sender, INITIAL_SUPPLY);
   }
 
   function () payable public {
