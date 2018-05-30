@@ -13,20 +13,6 @@ import "zeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
 contract ACARCrowdsale is Crowdsale, AllowanceCrowdsale, CappedCrowdsale, TimedCrowdsale, Destructible {
   using SafeMath for uint256;
 
-  event log(address indexed sender, string log);
-
-
-  function getNow() public view returns (uint) {
-    return now;
-  }
-
-  modifier onlyWhileOpen2 {
-    uint _now = getNow();
-    
-    require(_now >= openingTime && _now <= closingTime);
-    _;
-  }
-
   /**
    * @dev Constructor, takes maximum amount of wei accepted in the crowdsale.
    * @param _cap Max amount of wei to be contributed
@@ -39,27 +25,19 @@ contract ACARCrowdsale is Crowdsale, AllowanceCrowdsale, CappedCrowdsale, TimedC
   {
   }
 
-  function hasClosed() public view returns (bool) {
-    return getNow() > closingTime;
-  }
-
 //
-  function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal onlyWhileOpen2 {
-    require(weiRaised.add(_weiAmount) <= cap);
+  function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal onlyWhileOpen {
     Crowdsale._preValidatePurchase(_beneficiary, _weiAmount);
-  }
-
-  function _deliverTokens(address _beneficiary, uint256 _tokenAmount) internal {
-    token.transferFrom(tokenWallet, _beneficiary, _tokenAmount);
+    require(weiRaised.add(_weiAmount) <= cap);
   }
 
   function destroy() onlyOwner public {
-    require(getNow() > closingTime);
+    require(now > closingTime);
     selfdestruct(owner);
   }
 
   function destroyAndSend(address _recipient) onlyOwner public {
-    require(getNow() > closingTime);
+    require(now > closingTime);
     selfdestruct(_recipient);
   }
 
