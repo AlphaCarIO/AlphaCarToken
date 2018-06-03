@@ -27,7 +27,7 @@ contract ACARCrowdsaleMock is ACARCrowdsale {
   modifier onlyWhileOpen {
     uint _now = getNow();
 
-    emit log(msg.sender, "", _now);
+    emit log(msg.sender, "mock_crowdsale", _now);
     
     require(_now >= openingTime && _now <= closingTime);
     _;
@@ -35,16 +35,6 @@ contract ACARCrowdsaleMock is ACARCrowdsale {
 
   function hasClosed() public view returns (bool) {
     return getNow() > closingTime;
-  }
-
-  function destroy() onlyOwner public {
-    require(getNow() > closingTime);
-    selfdestruct(owner);
-  }
-
-  function destroyAndSend(address _recipient) onlyOwner public {
-    require(getNow() > closingTime);
-    selfdestruct(_recipient);
   }
   
 }

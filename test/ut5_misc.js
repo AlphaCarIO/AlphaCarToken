@@ -26,7 +26,7 @@ contract('AlphaCarToken', function (accounts) {
       cc.cap, cc.START_DATE, cc.END_DATE, {gas: cc.gas_amt, from: crowdsale_owner})
     console.log('crowdsale.address:', crowdsale.address)
 
-    await token.approve(crowdsale.address, cc.cap, {from: token_wallet});
+    //await token.approve(crowdsale.address, cc.cap, {from: token_wallet});
 
   })
   
@@ -49,6 +49,25 @@ contract('AlphaCarToken', function (accounts) {
 
     totalSupply_ = await token.totalSupply.call()
     assert.strictEqual(totalSupply_.toNumber(), cc.total.minus(cc.ONE).toNumber(), "step 2")
+
+  })
+
+  it('destroy test', async() => {
+    
+    await crowdsale.setNow(cc.END_DATE, {from: crowdsale_owner})
+
+    b = await crowdsale.hasClosed.call()
+    assert.strictEqual(b, false, "step 1")
+    
+    await utils.expectThrow(crowdsale.destroy.call({from: crowdsale_owner}))
+
+    b = await crowdsale.hasClosed.call()
+    assert.strictEqual(b, false, "step 2")
+    
+    await crowdsale.setNow(cc.END_DATE + 1, {from: crowdsale_owner})
+
+    b = await crowdsale.hasClosed.call()
+    assert.strictEqual(b, true, "step 3")
 
   })
   

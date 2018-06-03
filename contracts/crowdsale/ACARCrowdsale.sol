@@ -2,7 +2,6 @@ pragma solidity ^0.4.21;
 
 import "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
-import 'zeppelin-solidity/contracts/lifecycle/Destructible.sol';
 import "zeppelin-solidity/contracts/crowdsale/emission/AllowanceCrowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
@@ -10,7 +9,7 @@ import "zeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
 /**
  * @title ACTCrowdsale
  */
-contract ACARCrowdsale is Crowdsale, AllowanceCrowdsale, CappedCrowdsale, TimedCrowdsale, Destructible {
+contract ACARCrowdsale is Crowdsale, AllowanceCrowdsale, CappedCrowdsale, TimedCrowdsale, Ownable {
   using SafeMath for uint256;
 
   /**
@@ -29,16 +28,6 @@ contract ACARCrowdsale is Crowdsale, AllowanceCrowdsale, CappedCrowdsale, TimedC
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal onlyWhileOpen {
     Crowdsale._preValidatePurchase(_beneficiary, _weiAmount);
     require(weiRaised.add(_weiAmount) <= cap);
-  }
-
-  function destroy() onlyOwner public {
-    require(now > closingTime);
-    selfdestruct(owner);
-  }
-
-  function destroyAndSend(address _recipient) onlyOwner public {
-    require(now > closingTime);
-    selfdestruct(_recipient);
   }
 
 }

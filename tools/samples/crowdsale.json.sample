@@ -3,15 +3,15 @@
     "out_dir": "",
     "provider_url": "http://localhost:8545",
     "file_name": "ACTCrowdsale",
-    "abi_file": "../build/ACTCrowdsaleMock/ACTCrowdsale.abi",
-    "bytecode_file": "../build/ACTCrowdsaleMock/ACTCrowdsale.bin",
+    "abi_file": "../build/ACARCrowdsaleMock/ACARCrowdsale.abi",
+    "bytecode_file": "../build/ACARCrowdsaleMock/ACARCrowdsale.bin",
     "rate": 60000,
     "wallet": "",
     "token_contract_addr": "",
     "token_wallet_addr": "",
-    "cap": 18e+26,
-    "open_time": 1523750400,
-    "close_time": 1525103999,
+    "cap": 2e+27,
+    "open_time": 1530374400,
+    "close_time": 1530375400,
     "gas": 3000000,
-    "gasPrice": 1e+9
+    "gasPrice": 1e+10
 }
