@@ -7,7 +7,8 @@ import "zeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
 
 /**
- * @title ACTCrowdsale
+ * @title ACARCrowdsale
+ * ----- www.alphacar.io -----
  */
 contract ACARCrowdsale is Crowdsale, AllowanceCrowdsale, CappedCrowdsale, TimedCrowdsale, Ownable {
   using SafeMath for uint256;
@@ -22,6 +23,10 @@ contract ACARCrowdsale is Crowdsale, AllowanceCrowdsale, CappedCrowdsale, TimedC
     CappedCrowdsale(_cap)
     TimedCrowdsale(_openingTime, _closingTime) public
   {
+  }
+
+  function capReached() public view returns (bool) {
+    return weiRaised.mul(rate) >= cap;
   }
 
 //

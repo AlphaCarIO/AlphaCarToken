@@ -5,6 +5,7 @@ import 'zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol';
 
 // ----------------------------------------------------------------------------
 // Alpha Car Token smart contract - ERC20 Token Interface
+// ----- www.alphacar.io -----
 //
 // The MIT Licence.
 // ----------------------------------------------------------------------------

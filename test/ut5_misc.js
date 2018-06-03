@@ -59,15 +59,10 @@ contract('AlphaCarToken', function (accounts) {
     b = await crowdsale.hasClosed.call()
     assert.strictEqual(b, false, "step 1")
     
-    await utils.expectThrow(crowdsale.destroy.call({from: crowdsale_owner}))
-
-    b = await crowdsale.hasClosed.call()
-    assert.strictEqual(b, false, "step 2")
-    
     await crowdsale.setNow(cc.END_DATE + 1, {from: crowdsale_owner})
 
     b = await crowdsale.hasClosed.call()
-    assert.strictEqual(b, true, "step 3")
+    assert.strictEqual(b, true, "step 2")
 
   })
   
