@@ -13,7 +13,7 @@ let wallet
 let token_wallet
 let crowdsale_owner
 
-contract('Crowdsale', function (accounts) {
+contract('lowercapCrowdsale', function (accounts) {
   beforeEach(async () => {
     wallet = accounts[5]
     token_wallet = accounts[0]
@@ -27,10 +27,10 @@ contract('Crowdsale', function (accounts) {
       cc.lower_cap, cc.START_DATE, cc.END_DATE, {gas: cc.gas_amt, from: crowdsale_owner})
     console.log('crowdsale.address:', crowdsale.address)
 
-    await token.approve(crowdsale.address, cc.lower_cap, {from: token_wallet});
+    await token.approve(crowdsale.address, cc.lower_cap.mul(cc.rate), {from: token_wallet});
 
     var remainingTokens = await crowdsale.remainingTokens.call()
-    assert.strictEqual(remainingTokens.toNumber(), cc.lower_cap.toNumber(), "unexpected time for now!")
+    assert.strictEqual(remainingTokens.toNumber(), cc.lower_cap.mul(cc.rate).toNumber(), "unexpected time for now!")
   })
 
   it('do crowdsales in ICO. at the beginning of ICO', async () => {
@@ -75,7 +75,7 @@ contract('Crowdsale', function (accounts) {
 
     cap = await crowdsale.cap.call()
     console.log('cap', cap.toNumber())
-    assert.strictEqual(cap.toNumber(), cc.rate * 10 * cc.ONE, "10 eth raised!")
+    assert.strictEqual(cap.toNumber(), 10 * cc.ONE, "cap is 10 ether!")
 
     capReached = await crowdsale.capReached.call()
     console.log('capReached', capReached)

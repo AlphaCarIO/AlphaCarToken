@@ -28,7 +28,7 @@ contract('Crowdsale', function (accounts) {
     crowdsale = await Crowdsale.new(cc.rate, wallet, token.address, token_wallet,
       cc.cap, cc.START_DATE, cc.END_DATE, {gas: cc.gas_amt, from: crowdsale_owner})
 
-    await token.approve(crowdsale.address, cc.cap, {from: token_wallet});
+    await token.approve(crowdsale.address, cc.cap.mul(cc.rate), {from: token_wallet});
 
     await crowdsale.setNow(cc.START_DATE, {from: crowdsale_owner});
     await crowdsale.buyTokens(test_acc, {gas: cc.gas_amt, from: test_acc, value: web3.toWei("1", "Ether")});

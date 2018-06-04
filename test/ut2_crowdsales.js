@@ -27,10 +27,10 @@ contract('Crowdsale', function (accounts) {
       cc.cap, cc.START_DATE, cc.END_DATE, {gas: cc.gas_amt, from: crowdsale_owner})
     console.log('crowdsale.address:', crowdsale.address)
 
-    await token.approve(crowdsale.address, cc.cap, {from: token_wallet});
+    await token.approve(crowdsale.address, cc.cap.mul(cc.rate), {from: token_wallet});
 
     var remainingTokens = await crowdsale.remainingTokens.call()
-    assert.strictEqual(remainingTokens.toNumber(), cc.cap.toNumber(), "unexpected time for now!")
+    assert.strictEqual(remainingTokens.toNumber(), cc.cap.mul(cc.rate).toNumber(), "unexpected time for now!")
   })
 
   it('do crowdsales before ICO', async () => {

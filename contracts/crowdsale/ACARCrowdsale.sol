@@ -25,10 +25,6 @@ contract ACARCrowdsale is Crowdsale, AllowanceCrowdsale, CappedCrowdsale, TimedC
   {
   }
 
-  function capReached() public view returns (bool) {
-    return weiRaised.mul(rate) >= cap;
-  }
-
 //
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal onlyWhileOpen {
     Crowdsale._preValidatePurchase(_beneficiary, _weiAmount);

@@ -7,8 +7,8 @@ const rate = 60000;
 const DECIMALS = 18;
 const ONE = 10 ** DECIMALS;
 const total = BigNumber(100 * 10 ** 8 * ONE);
-const cap = BigNumber(20 * 10 ** 8 * ONE);
-const lower_cap = BigNumber(600000 * ONE);
+const cap = BigNumber(35000 * ONE);
+const lower_cap = BigNumber(10 * ONE);
 const amt = BigNumber(100000 * ONE);
 const amt1 = BigNumber(10000 * ONE);
 
