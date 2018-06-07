@@ -2,7 +2,8 @@
 
 if [ "xn" = x"$2" ]; then
     rm -rf out
-    mkdir -p out
 fi
+
+mkdir -p out
 
 node create_contract.js $1

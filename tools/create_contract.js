@@ -37,6 +37,7 @@ if (config.type == "token") { //token
 } else if (config.type == "crowdsale") { //crowdsale
 
     console.log('crowdsale cap', config.cap);
+    console.log('crowdsale gasPrice', config.gasPrice);
 
     byteCodeWithParam = contract.new.getData(config.rate, config.wallet, config.token_contract_addr,
         config.token_wallet_addr, config.cap, config.open_time, config.close_time, {data: bytecode_data})
